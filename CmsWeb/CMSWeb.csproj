@@ -633,6 +633,7 @@
     <Compile Include="Areas\People\Models\Downline\DownlineLevelsModel.cs" />
     <Compile Include="Areas\People\Models\Downline\DownlineSummaryModel.cs" />
     <Compile Include="Areas\People\Models\Task\TaskModel.cs" />
+    <Compile Include="Areas\Public\Controllers\APICalendarController.cs" />
     <Compile Include="Areas\Public\Controllers\CheckInAPIv2Controller.cs" />
     <Compile Include="Areas\Public\Controllers\CheckScanAPIController.cs" />
     <Compile Include="Areas\Public\Controllers\MobileAPIv2Controller.cs" />
@@ -847,6 +848,7 @@
     <Compile Include="Areas\Search\Models\RegistrationSearch\RegistrationSearchModel.cs" />
     <Compile Include="Areas\Search\Models\SavedQuery\SavedQueryInfo.cs" />
     <Compile Include="Areas\Search\Models\SavedQuery\SavedQueryModel.cs" />
+    <Compile Include="Areas\Setup\Controllers\CalendarController.cs" />
     <Compile Include="Areas\Setup\Models\Pushpay\RecurringManagment.cs" />
     <Compile Include="Areas\Setup\Controllers\GatewayController.cs" />
     <Compile Include="Areas\Setup\Models\GatewayAccountJsonModel.cs" />
@@ -1102,6 +1104,9 @@
     <Compile Include="Code\SmartBinder.cs" />
     <Compile Include="Code\Image.cs" />
     <Compile Include="Models\HtmlHolder.cs" />
+    <Compile Include="Services\Calendar\CalendarService.cs" />
+    <Compile Include="Services\Calendar\ICalendarService.cs" />
+    <Compile Include="Services\Calendar\Models\CalendarItem.cs" />
     <Compile Include="Services\MeetingCategory\MeetingCategoryService.cs" />
     <Compile Include="Services\MeetingCategory\IMeetingCategoryService.cs" />
     <Compile Include="Services\CommunicationService.cs" />
@@ -1830,6 +1835,7 @@
     <Content Include="Areas\OnlineReg\Views\OnlineReg\OnePageGiving\NotConfigured.cshtml" />
     <Content Include="Areas\Reports\Views\Reports\MeetingAttendance.cshtml" />
     <Content Include="libman.json" />
+    <Content Include="Areas\Setup\Views\Calendar\Index.cshtml" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -3383,6 +3389,7 @@
     <Folder Include="Areas\Public\Views\Shared\" />
     <Folder Include="Areas\Public\Views\TestMobile\" />
     <Folder Include="Areas\Search\Views\Shared\" />
+    <Folder Include="Areas\Setup\Models\Calendar\" />
     <Folder Include="Pushpay\Enums\" />
     <Folder Include="Pushpay\Exceptions\" />
   </ItemGroup>

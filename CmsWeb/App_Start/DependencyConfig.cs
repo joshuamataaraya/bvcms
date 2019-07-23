@@ -1,5 +1,5 @@
 using CmsWeb.Lifecycle;
-using CmsWeb.Membership;
+using CmsWeb.Services.Calendar;
 using CmsWeb.Services.MeetingCategory;
 using SimpleInjector;
 using SimpleInjector.Integration.Web;
@@ -11,7 +11,6 @@ using System.Security.Principal;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
-using System.Web.Security;
 
 namespace CmsWeb
 {
@@ -24,6 +23,7 @@ namespace CmsWeb
             container.Options.DefaultScopedLifestyle = new WebRequestLifestyle();
             container.Register<IRequestManager, RequestManager>();
             container.Register<IMeetingCategoryService, MeetingCategoryService>();
+            container.Register<ICalendarService, CalendarService>();
             container.Register(() => new Lazy<IPrincipal>(() => HttpContext.Current.User));
 
             container.RegisterWebApiControllers(GlobalConfiguration.Configuration);
