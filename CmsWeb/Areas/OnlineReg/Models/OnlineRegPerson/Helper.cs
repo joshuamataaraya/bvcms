@@ -32,6 +32,22 @@ namespace CmsWeb.Areas.OnlineReg.Models
             }
         }
 
+        private Dictionary<int, Settings> _MasterSettings;
+        public Dictionary<int, Settings> MasterSettings
+        {
+            get
+            {
+                if (_MasterSettings == null)
+                {
+                    _MasterSettings = HttpContextFactory.Current.Items["RegMasterSettings"] as Dictionary<int, Settings>;
+                    if (_MasterSettings == null)
+                        Parent.ParseMasterSettings();
+                    _MasterSettings = HttpContextFactory.Current.Items["RegMasterSettings"] as Dictionary<int, Settings>;
+                }
+                return _MasterSettings;
+            }
+        }
+
 
         private Settings _setting;
         public Settings setting
@@ -737,6 +753,12 @@ namespace CmsWeb.Areas.OnlineReg.Models
             DbUtil.LogActivity("OnlineReg " + action, masterorgid ?? orgid, PeopleId ?? Parent.UserPeopleId, Parent.DatumId);
         }
 
+        public bool IsInMasterOrg()
+        {
+            var o = masterorg ?? org;
+            return db.Organizations.Select(x => x.OrgPickList).Contains(o.OrganizationId.ToString());
+        }
+
         public string Address()
         {
             var sb = new StringBuilder();
@@ -749,13 +771,25 @@ namespace CmsWeb.Areas.OnlineReg.Models
         public bool ShowDOBOnFind()
         {
             var o = masterorg ?? org;
-            return o != null && Parent.settings.Values.Any(x => x.ShowPhoneOnFind) == true;
+
+            if (IsInMasterOrg())
+            {
+                return o != null && MasterSettings.Values.Any(x => x.ShowPhoneOnFind) == true;
+            }
+
+            return o != null && settings.Values.Any(x => x.ShowPhoneOnFind) == true;
         }
 
         public bool ShowPhoneOnFind()
         {
             var o = masterorg ?? org;
-            return o != null && Parent.settings.Values.Any(x => x.ShowPhoneOnFind) == true;
+
+            if (IsInMasterOrg())
+            {
+                return o != null && MasterSettings.Values.Any(x => x.ShowPhoneOnFind) == true;
+            }
+
+            return o != null && settings.Values.Any(x => x.ShowPhoneOnFind) == true;
         }
 
         public int MinimumUserAge => db.Setting("MinimumUserAge", "16").ToInt();
