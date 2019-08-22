@@ -23,41 +23,38 @@ namespace CMSWebTests.Areas.OnlineReg.Models.OnlineRegPerson
             var routeDataValues = new Dictionary<string, string> { { "controller", "OnlineReg" } };
             controller.ControllerContext = ControllerTestUtils.FakeContextController(controller, routeDataValues);
 
+            // Create Child Org
+            var ChildOrgconfig = new Organization()
+            {
+                OrganizationName = "MockChildName",
+                RegistrationTitle = "MockChildTitle",
+                Location = "MockChildLocation",
+                RegistrationTypeId = 8
+            };
+
+            var FakeChildOrg = FakeOrganizationUtils.MakeFakeOrganization(ChildOrgconfig);
+            ChildOrgId = FakeChildOrg.org.OrganizationId;
+
+            FakeOrganizationUtils.FakeNewOrganizationModel = null;
+
             // Create Master Org
             var MasterOrgconfig = new Organization() {
                 OrganizationName = "MockMasterName",
                 RegistrationTitle = "MockMasterTitle",
                 Location = "MockLocation",
                 RegistrationTypeId = 20,
-                RegSetting = XMLSettings(MasterOrgId)
+                RegSettingXml = XMLSettings(MasterOrgId),
+                OrgPickList = ChildOrgId.ToString()
             };
 
             var FakeMasterOrg = FakeOrganizationUtils.MakeFakeOrganization(MasterOrgconfig);
             MasterOrgId = FakeMasterOrg.org.OrganizationId;
-
-            FakeOrganizationUtils.FakeNewOrganizationModel = null;
-
-            // Create Child Org
-            var ChildOrgconfig = new Organization()
-            {
-                OrganizationName = "MockMasterName",
-                RegistrationTitle = "MockMasterTitle",
-                Location = "MockLocation",
-                RegistrationTypeId = 8,
-                ParentOrgId = MasterOrgId
-            };
-
-            var FakeChildOrg = FakeOrganizationUtils.MakeFakeOrganization(ChildOrgconfig);
-            ChildOrgId = FakeChildOrg.org.OrganizationId;
-
-            var MasterOnlineRegModel = FakeOrganizationUtils.GetFakeOnlineRegModel(ChildOrgId);
-            var ChildOnlineRegModel = FakeOrganizationUtils.GetFakeOnlineRegModel(MasterOrgId);
-
-            var MasterOnlineRegPersonModel = MasterOnlineRegModel.LoadExistingPerson(ChildOnlineRegModel.UserPeopleId ?? 0, 0);
+            
+            var ChildOnlineRegModel = FakeOrganizationUtils.GetFakeOnlineRegModel(ChildOrgId);
             var ChildOnlineRegPersonModel = ChildOnlineRegModel.LoadExistingPerson(ChildOnlineRegModel.UserPeopleId ?? 0, 0);
 
-            ChildOnlineRegPersonModel.ShowDOBOnFind().ShouldBe(MasterOnlineRegPersonModel.ShowDOBOnFind());
-            ChildOnlineRegPersonModel.ShowPhoneOnFind().ShouldBe(MasterOnlineRegPersonModel.ShowPhoneOnFind());
+            ChildOnlineRegPersonModel.ShowDOBOnFind().ShouldBe(true);
+            ChildOnlineRegPersonModel.ShowPhoneOnFind().ShouldBe(true);
 
             FakeOrganizationUtils.DeleteOrg(MasterOrgId);
             FakeOrganizationUtils.DeleteOrg(ChildOrgId);
@@ -79,6 +76,6 @@ namespace CMSWebTests.Areas.OnlineReg.Models.OnlineRegPerson
                 "</Settings>", OrgId);
 
             return Settings;
-        }
+        }   
     }
 }
