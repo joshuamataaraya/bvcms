@@ -756,7 +756,7 @@ namespace CmsWeb.Areas.OnlineReg.Models
         public bool IsInMasterOrg()
         {
             var o = masterorg ?? org;
-            return db.Organizations.Select(x => x.OrgPickList).Contains(o.OrganizationId.ToString());
+            return db.Organizations.Where(x => db.SplitInts(x.OrgPickList).Any(i => i.ValueX == o.OrganizationId)).Count() > 0 ? true : false;
         }
 
         public string Address()
@@ -774,10 +774,17 @@ namespace CmsWeb.Areas.OnlineReg.Models
 
             if (IsInMasterOrg())
             {
-                return o != null && MasterSettings.Values.Any(x => x.ShowPhoneOnFind) == true;
+                var MasterShowDOBOnFind = MasterSettings.Values.Any(x => x.ShowDOBOnFind);
+
+                if(!MasterShowDOBOnFind)
+                {
+                    return o != null && settings.Values.Any(x => x.ShowDOBOnFind) == true;
+                }
+
+                return o != null && MasterShowDOBOnFind;
             }
 
-            return o != null && settings.Values.Any(x => x.ShowPhoneOnFind) == true;
+            return o != null && settings.Values.Any(x => x.ShowDOBOnFind) == true;
         }
 
         public bool ShowPhoneOnFind()
@@ -786,7 +793,14 @@ namespace CmsWeb.Areas.OnlineReg.Models
 
             if (IsInMasterOrg())
             {
-                return o != null && MasterSettings.Values.Any(x => x.ShowPhoneOnFind) == true;
+                var MasterShowPhoneOnFind = MasterSettings.Values.Any(x => x.ShowPhoneOnFind);
+
+                if (!MasterShowPhoneOnFind)
+                {
+                    return o != null && settings.Values.Any(x => x.ShowPhoneOnFind) == true;
+                }
+
+                return o != null && MasterShowPhoneOnFind;
             }
 
             return o != null && settings.Values.Any(x => x.ShowPhoneOnFind) == true;
