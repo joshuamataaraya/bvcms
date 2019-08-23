@@ -29,7 +29,8 @@ namespace CMSWebTests.Areas.OnlineReg.Models.OnlineRegPerson
                 OrganizationName = "MockChildName",
                 RegistrationTitle = "MockChildTitle",
                 Location = "MockChildLocation",
-                RegistrationTypeId = 8
+                RegistrationTypeId = 8,
+                RegSettingXml = XMLSettings(MasterOrgId)
             };
 
             var FakeChildOrg = FakeOrganizationUtils.MakeFakeOrganization(ChildOrgconfig);
@@ -43,7 +44,7 @@ namespace CMSWebTests.Areas.OnlineReg.Models.OnlineRegPerson
                 RegistrationTitle = "MockMasterTitle",
                 Location = "MockLocation",
                 RegistrationTypeId = 20,
-                RegSettingXml = XMLSettings(MasterOrgId),
+                RegSettingXml = XMLSettings(MasterOrgId, true),
                 OrgPickList = ChildOrgId.ToString()
             };
 
@@ -60,7 +61,7 @@ namespace CMSWebTests.Areas.OnlineReg.Models.OnlineRegPerson
             FakeOrganizationUtils.DeleteOrg(ChildOrgId);
         }
 
-        private string XMLSettings(int OrgId)
+        private string XMLSettings(int OrgId, bool IsMasterOrg = false)
         {
             string Settings = string.Format(
                 @"<Settings id=""{0}"">" +
@@ -70,12 +71,12 @@ namespace CMSWebTests.Areas.OnlineReg.Models.OnlineRegPerson
                         "<Deposit>15</Deposit>" +
                     "</Fees>" +
                     "<NotRequired>" +
-                        "<ShowDOBOnFind>True</ShowDOBOnFind>" +
-                        "<ShowPhoneOnFind>True</ShowPhoneOnFind>" +
+                        "<ShowDOBOnFind>{1}</ShowDOBOnFind>" +
+                        "<ShowPhoneOnFind>{1}</ShowPhoneOnFind>" +
                     "</NotRequired>" +
-                "</Settings>", OrgId);
+                "</Settings>", OrgId, IsMasterOrg ? "True" : "False");
 
             return Settings;
-        }   
+        }
     }
 }
