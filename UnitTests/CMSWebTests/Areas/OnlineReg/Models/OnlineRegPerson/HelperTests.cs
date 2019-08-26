@@ -57,8 +57,14 @@ namespace CMSWebTests.Areas.OnlineReg.Models.OnlineRegPerson
             var MasterOnlineRegModel = FakeOrganizationUtils.GetFakeOnlineRegModel(MasterOrgId);
             var MasterOnlineRegPersonModel = MasterOnlineRegModel.LoadExistingPerson(MasterOnlineRegModel.UserPeopleId ?? 0, 0);
 
-            ChildOnlineRegPersonModel.ShowDOBOnFind().ShouldBe(MasterOnlineRegPersonModel.ShowDOBOnFind());
-            ChildOnlineRegPersonModel.ShowPhoneOnFind().ShouldBe(MasterOnlineRegPersonModel.ShowPhoneOnFind());
+            bool ChildDOB = ChildOnlineRegPersonModel.ShowDOBOnFind();
+            bool ChildPhone = ChildOnlineRegPersonModel.ShowPhoneOnFind();
+
+            bool MasterDOB = MasterOnlineRegPersonModel.ShowDOBOnFind();
+            bool MasterPhone = MasterOnlineRegPersonModel.ShowPhoneOnFind();
+
+            ChildDOB.ShouldBe(MasterDOB);
+            ChildPhone.ShouldBe(MasterPhone);
 
             FakeOrganizationUtils.DeleteOrg(MasterOrgId);
             FakeOrganizationUtils.DeleteOrg(ChildOrgId);
