@@ -778,13 +778,13 @@ namespace CmsWeb.Areas.OnlineReg.Models
 
                 if(!MasterShowDOBOnFind)
                 {
-                    return o != null && settings.Values.Any(x => x.ShowDOBOnFind) == true;
+                    return o != null && settings.Values.Any(x => x.ShowDOBOnFind);
                 }
 
                 return o != null && MasterShowDOBOnFind;
             }
 
-            return o != null && settings.Values.Any(x => x.ShowDOBOnFind) == true;
+            return o != null && settings.Values.Any(x => x.ShowDOBOnFind);
         }
 
         public bool ShowPhoneOnFind()
@@ -797,13 +797,13 @@ namespace CmsWeb.Areas.OnlineReg.Models
 
                 if (!MasterShowPhoneOnFind)
                 {
-                    return o != null && settings.Values.Any(x => x.ShowPhoneOnFind) == true;
+                    return o != null && settings.Values.Any(x => x.ShowPhoneOnFind);
                 }
 
                 return o != null && MasterShowPhoneOnFind;
             }
 
-            return o != null && settings.Values.Any(x => x.ShowPhoneOnFind) == true;
+            return o != null && settings.Values.Any(x => x.ShowPhoneOnFind);
         }
 
         public int MinimumUserAge => db.Setting("MinimumUserAge", "16").ToInt();
