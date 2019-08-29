@@ -48,9 +48,10 @@ namespace IntegrationTests.Areas.Reports.Views.Reports
 
             Find(id: "otheredit").Click();
 
-            Wait(5);
-
+            Open($"{rootUrl}OnlineReg/{OrgId}");
             Open($"{rootUrl}Reports/Application/{OrgId}/{user.PeopleId}/MembershipApp2017");
+
+            Wait(5);
 
             PageSource.ShouldContain("ThisTextMustAppearInTests");
 
