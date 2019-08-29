@@ -48,7 +48,7 @@ namespace IntegrationTests.Areas.Reports.Views.Reports
 
             Find(id: "otheredit").Click();
 
-            Wait(3);
+            Wait(5);
 
             Open($"{rootUrl}Reports/Application/{OrgId}/{user.PeopleId}/MembershipApp2017");
 
