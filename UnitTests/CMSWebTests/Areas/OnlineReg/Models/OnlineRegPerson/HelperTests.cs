@@ -1,12 +1,8 @@
 ﻿using Xunit;
-using System.Collections;
-using System.Net.Http;
 using CmsData;
-using CmsWeb.Areas.OnlineReg.Models;
 using System.Collections.Generic;
 using Shouldly;
-using UtilityExtensions;
-using CmsWeb.Areas.OnlineReg.Models;
+using SharedTestFixtures;
 
 namespace CMSWebTests.Areas.OnlineReg.Models.OnlineRegPerson
 {

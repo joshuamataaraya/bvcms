@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UtilityExtensions;
 using Xunit;
 using Shouldly;
+using SharedTestFixtures;
 
 namespace CMSWebTests.Areas.Setup.Controllers
 {

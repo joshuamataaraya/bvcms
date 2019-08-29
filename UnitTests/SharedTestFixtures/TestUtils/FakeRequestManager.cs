@@ -6,7 +6,7 @@ using System.Web;
 using CmsWeb.Lifecycle;
 using UtilityExtensions;
 
-namespace CMSWebTests
+namespace SharedTestFixtures
 {
     public class FakeRequestManager : IRequestManager, IDisposable
     {

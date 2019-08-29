@@ -112,8 +112,6 @@
     <Compile Include="Areas\OnlineReg\Models\OnlineRegPerson\HelperTests.cs" />
     <Compile Include="Areas\Reports\Models\Reports\Export\ExportInvolvementsTests.cs" />
     <Compile Include="Areas\Setup\Controllers\DivisionControllerTests.cs" />
-    <Compile Include="TestUtils\FakeOrganizationUtils.cs" />
-    <Compile Include="TestUtils\FakeRequestManager.cs" />
     <Compile Include="Areas\OnlineReg\Models\NewAskChurchQuestionTest.cs" />
     <Compile Include="Areas\People\Models\Contact\ContactExtraLocationConfigTests.cs" />
     <Compile Include="Areas\People\Models\Person\Enrollments\RegistrationsModelTests.cs" />
@@ -121,8 +119,6 @@
     <Compile Include="Code\CodeValueModelTests.cs" />
     <Compile Include="Code\ViewExtensions2Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestUtils\ContextTestUtils.cs" />
-    <Compile Include="TestUtils\ControllerTestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
