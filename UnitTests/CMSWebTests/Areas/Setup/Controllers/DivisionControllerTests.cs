@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UtilityExtensions;
 using Xunit;
-using Shouldly;
-using SharedTestFixtures;
 
 namespace CMSWebTests.Areas.Setup.Controllers
 {
