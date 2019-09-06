@@ -622,10 +622,10 @@ namespace CmsWeb.Areas.Reports.Controllers
             };
             if (useword == 1)
             {
-                return new DocXRollsheetResult { OrgSearchModel = m, NewMeetingInfo = mi };
+                return new DocXRollsheetResult(CurrentDatabase) { OrgSearchModel = m, NewMeetingInfo = mi };
             }
 
-            return new RollsheetResult { OrgSearchModel = m, NewMeetingInfo = mi };
+            return new RollsheetResult(CurrentDatabase) { OrgSearchModel = m, NewMeetingInfo = mi };
         }
 
         [HttpPost, Route("RollsheetForOrg/{queryid}")]
@@ -633,16 +633,16 @@ namespace CmsWeb.Areas.Reports.Controllers
         {
             if (mi.UseWord == true)
             {
-                return new DocXRollsheetResult { QueryId = queryid, NewMeetingInfo = mi };
+                return new DocXRollsheetResult(CurrentDatabase) { QueryId = queryid, NewMeetingInfo = mi };
             }
 
-            return new RollsheetResult { QueryId = queryid, NewMeetingInfo = mi };
+            return new RollsheetResult(CurrentDatabase) { QueryId = queryid, NewMeetingInfo = mi };
         }
 
         [HttpGet, Route("RollsheetForMeeting/{meetingid:int}")]
         public ActionResult RollsheetForMeeting(int meetingid)
         {
-            return new RollsheetResult() { MeetingId = meetingid };
+            return new RollsheetResult(CurrentDatabase) { MeetingId = meetingid };
         }
 
         [HttpPost]
@@ -650,16 +650,16 @@ namespace CmsWeb.Areas.Reports.Controllers
         {
             if (mi.UseWord == true)
             {
-                return new DocXRollsheetResult { OrgSearchModel = m, NewMeetingInfo = mi };
+                return new DocXRollsheetResult(CurrentDatabase) { OrgSearchModel = m, NewMeetingInfo = mi };
             }
 
-            return new RollsheetResult { OrgSearchModel = m, NewMeetingInfo = mi };
+            return new RollsheetResult(CurrentDatabase) { OrgSearchModel = m, NewMeetingInfo = mi };
         }
 
         [HttpGet]
         public ActionResult Roster(Guid id, int? oid)
         {
-            return new RosterListResult
+            return new RosterListResult(CurrentDatabase)
             {
                 qid = id,
                 orgid = oid,
@@ -669,13 +669,13 @@ namespace CmsWeb.Areas.Reports.Controllers
         [HttpPost]
         public ActionResult Roster(OrgSearchModel m)
         {
-            return new RosterListResult(m);
+            return new RosterListResult(CurrentDatabase, m);
         }
 
         [HttpGet]
         public ActionResult Roster1(Guid id, int? oid)
         {
-            return new RosterResult
+            return new RosterResult(CurrentDatabase)
             {
                 qid = id,
                 org = oid,
@@ -685,7 +685,7 @@ namespace CmsWeb.Areas.Reports.Controllers
         [HttpPost]
         public ActionResult Roster1(OrgSearchModel m)
         {
-            return new RosterResult(m);
+            return new RosterResult(CurrentDatabase, m);
         }
 
         [HttpPost]

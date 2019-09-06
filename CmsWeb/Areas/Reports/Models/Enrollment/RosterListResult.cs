@@ -40,14 +40,14 @@ namespace CmsWeb.Areas.Reports.Models
     {
         public Guid? qid;
         public int? orgid;
+
+        public CMSDataContext CurrentDatabase { get; private set; }
+
         private OrgSearchModel model;
 
-        public RosterListResult()
+        public RosterListResult(CMSDataContext db, OrgSearchModel m = null)
         {
-
-        }
-        public RosterListResult(OrgSearchModel m)
-        {
+            CurrentDatabase = db;
             model = m;
         }
         public override void ExecuteResult(ControllerContext context)
@@ -276,7 +276,7 @@ namespace CmsWeb.Areas.Reports.Models
         {
             var orgs = orgid == null
                 ? model.FetchOrgs()
-                : OrgSearchModel.FetchOrgs(orgid.Value);
+                : OrgSearchModel.FetchOrgs(orgid.Value, CurrentDatabase);
             var q = from o in orgs
                     orderby o.OrganizationName
                     select new OrgInfo

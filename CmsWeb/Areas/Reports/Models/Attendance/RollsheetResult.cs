@@ -1,10 +1,3 @@
-/* Author: David Carroll
- * Copyright (c) 2008, 2009 Bellevue Baptist Church
- * Licensed under the GNU General Public License (GPL v2)
- * you may not use this code except in compliance with the License.
- * You may obtain a copy of the License at http://bvcms.codeplex.com/license
- */
-
 using CmsData;
 using CmsData.Codes;
 using CmsWeb.Areas.Dialog.Models;
@@ -16,7 +9,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using UtilityExtensions;
 
@@ -40,7 +32,14 @@ namespace CmsWeb.Areas.Reports.Models
         public Guid? QueryId;
         private bool pageSetStarted;
         private Meeting meeting;
-        private OrgFilter Filter => QueryId.HasValue ? DbUtil.Db.OrgFilters.Single(vv => vv.QueryId == QueryId) : null;
+        private OrgFilter Filter => QueryId.HasValue ? CurrentDatabase.OrgFilters.Single(vv => vv.QueryId == QueryId) : null;
+
+        public CMSDataContext CurrentDatabase { get; private set; }
+
+        public RollsheetResult(CMSDataContext db)
+        {
+            CurrentDatabase = db;
+        }
 
         public override void ExecuteResult(ControllerContext context)
         {
@@ -48,7 +47,7 @@ namespace CmsWeb.Areas.Reports.Models
 
             if (MeetingId.HasValue)
             {
-                meeting = DbUtil.Db.Meetings.Single(mt => mt.MeetingId == MeetingId);
+                meeting = CurrentDatabase.Meetings.Single(mt => mt.MeetingId == MeetingId);
                 Debug.Assert(meeting.MeetingDate != null, "meeting.MeetingDate != null");
                 NewMeetingInfo = new NewMeetingInfo { MeetingDate = meeting.MeetingDate.Value };
             }
@@ -106,9 +105,9 @@ namespace CmsWeb.Areas.Reports.Models
                 }
                 else if (OrgSearchModel != null)
                 {
-                    var q = from om in DbUtil.Db.OrganizationMembers
+                    var q = from om in CurrentDatabase.OrganizationMembers
                             where om.OrganizationId == o.OrgId
-                            join m in DbUtil.Db.OrgPeople(o.OrgId, o.Groups) on om.PeopleId equals m.PeopleId
+                            join m in CurrentDatabase.OrgPeople(o.OrgId, o.Groups) on om.PeopleId equals m.PeopleId
                             where om.EnrollmentDate <= Util.Now
                             orderby om.Person.LastName, om.Person.FamilyId, om.Person.Name2
                             let p = om.Person
@@ -140,9 +139,9 @@ namespace CmsWeb.Areas.Reports.Models
                 }
                 else if (Filter?.GroupSelect == GroupSelectCode.Member)
                 {
-                    var q = from om in DbUtil.Db.OrganizationMembers
+                    var q = from om in CurrentDatabase.OrganizationMembers
                             where om.OrganizationId == Filter.Id
-                            join m in DbUtil.Db.OrgFilterPeople(QueryId, null)
+                            join m in CurrentDatabase.OrgFilterPeople(QueryId, null)
                                 on om.PeopleId equals m.PeopleId
                             where om.EnrollmentDate <= Util.Now
                             where NewMeetingInfo.ByGroup == false || m.Groups.Contains((char)10 + o.Groups + (char)10)
@@ -177,9 +176,9 @@ namespace CmsWeb.Areas.Reports.Models
                 }
                 else
                 {
-                    var q = from m in DbUtil.Db.OrgFilterPeople(QueryId, null)
+                    var q = from m in CurrentDatabase.OrgFilterPeople(QueryId, null)
                             orderby m.Name2
-                            let p = DbUtil.Db.People.Single(pp => pp.PeopleId == m.PeopleId)
+                            let p = CurrentDatabase.People.Single(pp => pp.PeopleId == m.PeopleId)
                             let om = p.OrganizationMembers.SingleOrDefault(mm => mm.OrganizationId == Filter.Id)
                             let ch = NewMeetingInfo.UseAltNames && p.AltName != null && p.AltName.Length > 0
                             select new
@@ -352,7 +351,7 @@ namespace CmsWeb.Areas.Reports.Models
         private IEnumerable<OrgInfo> ReportList()
         {
             var orgs = OrgSearchModel == null
-                ? OrgSearchModel.FetchOrgs(meeting?.OrganizationId ?? Filter?.Id ?? 0)
+                ? OrgSearchModel.FetchOrgs(meeting?.OrganizationId ?? Filter?.Id ?? 0, CurrentDatabase)
                 : OrgSearchModel.FetchOrgs();
             var q = from o in orgs
                     orderby o.Division, o.OrganizationName
@@ -371,10 +370,10 @@ namespace CmsWeb.Areas.Reports.Models
         private IEnumerable<OrgInfo> ReportList2()
         {
             var orgs = OrgSearchModel == null
-                ? OrgSearchModel.FetchOrgs(Filter?.Id ?? 0)
+                ? OrgSearchModel.FetchOrgs(Filter?.Id ?? 0, CurrentDatabase)
                 : OrgSearchModel.FetchOrgs();
             var q = from o in orgs
-                    from sg in DbUtil.Db.MemberTags
+                    from sg in CurrentDatabase.MemberTags
                     where sg.OrgId == o.OrganizationId
                     where (NewMeetingInfo.GroupFilterPrefix ?? "") == "" || sg.Name.StartsWith(NewMeetingInfo.GroupFilterPrefix)
                     orderby sg.Name

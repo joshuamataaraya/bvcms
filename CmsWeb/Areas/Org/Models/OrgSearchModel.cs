@@ -326,9 +326,9 @@ namespace CmsWeb.Areas.Search.Models
             return queryable;
         }
 
-        public static IQueryable<OrgSearch> FetchOrgs(int orgId)
+        public static IQueryable<OrgSearch> FetchOrgs(int orgId, CMSDataContext Db)
         {
-            return DbUtil.Db.OrgSearch(orgId.ToString(), null, null, null, null, null, null, null, DbUtil.Db.CurrentUser.UserId, null);
+            return Db.OrgSearch(orgId.ToString(), null, null, null, null, null, null, null, Db.CurrentUser.UserId, null);
         }
 
         // ReSharper disable once FunctionComplexityOverflow

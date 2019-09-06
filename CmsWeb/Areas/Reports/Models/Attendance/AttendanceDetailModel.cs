@@ -1,4 +1,3 @@
-using CmsData;
 using CmsWeb.Areas.Search.Models;
 using System;
 using System.Collections.Generic;
@@ -31,10 +30,11 @@ namespace CmsWeb.Areas.Reports.Models
             this.dt2 = dt2;
             Model = model;
         }
+
         public List<MeetingRow> FetchMeetings()
         {
             var orgs = Model.FetchOrgs();
-            var q = from m in DbUtil.Db.Meetings
+            var q = from m in Model.CurrentDatabase.Meetings
                     join o in orgs on m.OrganizationId equals o.OrganizationId
                     where m.MeetingDate >= dt1
                     where m.MeetingDate <= dt2
@@ -75,13 +75,12 @@ namespace CmsWeb.Areas.Reports.Models
             list.Add(t);
             return list;
         }
+
         public class MeetingRow
         {
-            //            public int MeetingId { get; set; }
             public string OrgName { get; set; }
             public string Leader { get; set; }
             public DateTime DateTime { get; set; }
-            //            public string OrgId { get; set; }
             public int Present { get; set; }
             public int Visitors { get; set; }
             public int OutTowners { get; set; }

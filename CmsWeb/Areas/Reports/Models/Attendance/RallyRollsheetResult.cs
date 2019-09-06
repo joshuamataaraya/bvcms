@@ -249,7 +249,7 @@ namespace CmsWeb.Areas.Reports.Models
         private List<OrgInfo> ReportList()
         {
             var orgs = orgid.HasValue
-                ? OrgSearchModel.FetchOrgs(orgid.Value)
+                ? OrgSearchModel.FetchOrgs(orgid.Value, CurrentDatabase)
                 : OrgSearchModel.FetchOrgs();
             var q = from o in orgs
                     orderby o.Division, o.OrganizationName
@@ -267,7 +267,7 @@ namespace CmsWeb.Areas.Reports.Models
         private List<OrgInfo> ReportList2()
         {
             var orgs = orgid.HasValue
-                ? OrgSearchModel.FetchOrgs(orgid.Value)
+                ? OrgSearchModel.FetchOrgs(orgid.Value,  CurrentDatabase)
                 : OrgSearchModel.FetchOrgs();
             var q = from o in orgs
                     from sg in CurrentDatabase.MemberTags
