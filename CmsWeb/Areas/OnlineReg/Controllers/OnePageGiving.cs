@@ -21,7 +21,8 @@ namespace CmsWeb.Areas.OnlineReg.Controllers
             Response.NoCache();
             try
             {
-                var m = new OnlineRegModel(Request, CurrentDatabase, id, testing, null, null, source);
+                var m = new OnlineRegModel(Request, CurrentDatabase, id, testing, null, null, source);                
+                if (m.org.RegistrationTypeId != RegistrationTypeCode.OnlineGiving) return Redirect($"/OnlineReg/{id}");
 
                 var pid = Util.UserPeopleId;
                 if (pid.HasValue)
