@@ -92,40 +92,9 @@ namespace CmsWeb.Areas.People.Models
             }
         }
 
-        public List<PledgesSummary> GetPledgesSummary()
+        public List<CmsData.View.PledgesSummary> GetPledgesSummary()
         {
-            IQueryable<Contribution> contributionRecords = GetContributionRecords();
-            PledgesSummary = new List<PledgesSummary>();
-            foreach (Contribution contribution in contributionRecords.Where(p => p.ContributionTypeId == ContributionTypeCode.Pledge))
-            {
-                AddSummaryPledge(contribution, contributionRecords);
-            }
-            return PledgesSummary;
-        }
-
-        private void AddSummaryPledge(Contribution contribution, IQueryable<Contribution> contributionRecords)
-        {
-            var fundName = contribution.ContributionFund.FundName;
-            if (!PledgesSummary.Any(p => p.Fund == fundName))
-            {
-                decimal amountPledged = contributionRecords.Where(c => c.ContributionTypeId == ContributionTypeCode.Pledge && c.ContributionFund.FundName == fundName)
-                                                    .Sum(c => c.ContributionAmount ?? 0);
-                List<Contribution> contributionsThisFund = contributionRecords
-                    .Where(c => c.ContributionTypeId != ContributionTypeCode.Pledge && c.ContributionFund.FundName == fundName).ToList();
-                decimal amountContributed = 0;
-                if (contributionsThisFund.Count != 0)
-                {
-                    amountContributed = contributionsThisFund.Sum(c => c.ContributionAmount ?? 0);
-                }
-                PledgesSummary.Add(new PledgesSummary()
-                {
-                    FundId = contribution.ContributionFund.FundId,
-                    Fund = fundName,
-                    AmountPledged = amountPledged,
-                    AmountContributed = amountContributed,
-                    Balance = amountPledged - amountContributed < 0 ? 0 : amountPledged - amountContributed
-                });
-            }
+            return DbUtil.Db.PledgesSummary(Person.PeopleId).ToList();
         }
 
         public override IQueryable<Contribution> DefineModelSort(IQueryable<Contribution> q)
