@@ -3,8 +3,10 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Linq;
+using UtilityExtensions;
 
 namespace CmsData.API
 {
@@ -39,41 +41,45 @@ namespace CmsData.API
         {
             // determine what type of dictionary is passed in
 
-            // Is it a DynamicData object?
-            var dynamicData = d as DynamicData;
-            if (dynamicData != null)
+            if (d is DynamicData dynamicData)
             {
                 return new Dictionary<string, object>(dynamicData.dict);
             }
 
-            // Is it a PythonDictionary object?
-            var pythonDictionary = d as PythonDictionary;
-            if (pythonDictionary != null)
+            if (d is PythonDictionary pythonDictionary)
             {
                 var dict = new Dictionary<string, object>();
                 foreach (var kv in pythonDictionary)
                 {
-                    dict.Add("@" + kv.Key, kv.Value);
+                    dict.Add(kv.Key.ToString(), kv.Value);
                 }
 
                 return dict;
             }
 
-            // Is it a Dictionary of strings like QueryParameters?
-            var dictionaryss = d as Dictionary<string, string>;
-            if (dictionaryss != null)
+            if (d is IDictionary<string, object> dapperRow)
+            {
+                var dict = new Dictionary<string, object>();
+                foreach (var kv in dapperRow)
+                {
+                    dict.Add(kv.Key, kv.Value);
+                }
+
+                return dict;
+            }
+
+            if (d is Dictionary<string, string> dictionaryss) // QueryParameters
             {
                 var dict = new Dictionary<string, object>();
                 foreach (var kv in dictionaryss)
                 {
-                    dict.Add("@" + kv.Key, kv.Value);
+                    dict.Add(kv.Key, kv.Value);
                 }
 
                 return dict;
             }
 
-            var dictionaryso = d as Dictionary<string, object>;
-            if (dictionaryso != null)
+            if (d is Dictionary<string, object> dictionaryso)
             {
                 return dictionaryso;
             }
@@ -82,6 +88,7 @@ namespace CmsData.API
 
             throw new Exception("data is an unexpected type");
         }
+
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
             dict[binder.Name] = value;
@@ -114,10 +121,23 @@ namespace CmsData.API
                 dict.Remove(name);
             }
         }
+
         public void AddValue(string name, object value)
         {
             dict[name] = value;
         }
+        public void SetValue(string name, string value)
+        {
+            if (value == null)
+                AddValue(name, value);
+            else if(value.AllDigits())
+                AddValue(name, value.ToInt());
+            else if(value.IsDecimal())
+                AddValue(name, value.ToDecimal());
+            else
+                AddValue(name, value);
+        }
+
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             foreach (var kv in dict)
@@ -125,6 +145,7 @@ namespace CmsData.API
                 info.AddValue(kv.Key, kv.Value);
             }
         }
+
         /// <summary>
         /// This constructor is used by JsonConvert.DeserializeObject
         /// </summary>
@@ -155,6 +176,16 @@ namespace CmsData.API
                         case JTokenType.Float:
                             dict.Add(kv.Name, Convert.ToDecimal(kv.Value));
                             break;
+                        case JTokenType.Array:
+                            object o;
+                            if (t.HasValues && t.First is JObject)
+                                // a list of dictionary objects
+                                o = JsonConvert.DeserializeObject<List<DynamicData>>(t.ToString());
+                            else
+                                // just a list of objects (strings or integers)
+                                o = JsonConvert.DeserializeObject<IronPython.Runtime.List>(t.ToString());
+                            dict.Add(kv.Name, o);
+                            break;
                         default:
                             dict.Add(kv.Name, kv.Value);
                             break;
@@ -165,7 +196,55 @@ namespace CmsData.API
 
         public override string ToString()
         {
-            return JsonConvert.SerializeObject(dict, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(dict, Formatting.Indented);
+            return json.Replace("'", @"''");
+        }
+        public string ToFlatString()
+        {
+            var emptyvalues = dict.Where(vv => vv.Value == null || vv.Value?.ToString() == "").Select(vv => vv.Key).ToList();
+            foreach (var k in emptyvalues)
+                this.Remove(k);
+            var json = JsonConvert.SerializeObject(dict);
+            return json.Replace("'", @"''");
+        }
+
+        public List<string> Keys(DynamicData metadata = null)
+        {
+            var keys = new List<string>();
+            if (metadata != null)
+            {
+                foreach (var k in metadata.dict)
+                {
+                    var typ = k.Value.ToString();
+                    var tok = typ.GetCsvToken(1, sep: " ");
+                    switch (tok)
+                    {
+                        case "hidden":
+                        case "special":
+                        case "readonly":
+                            continue;
+                    }
+                    keys.Add(k.Key);
+                }
+                return keys;
+            }
+            foreach (var k in dict)
+            {
+                if(k.Value is DynamicData || k.Value is Array)
+                    continue;
+                keys.Add(k.Key);
+            }
+            return keys;
+        }
+        public List<string> SpecialKeys(DynamicData metadata)
+        {
+            var keys = new List<string>();
+            foreach (var k in metadata.dict)
+            {
+                if(k.Value.ToString().StartsWith("special "))
+                    keys.Add(k.Key);
+            }
+            return keys;
         }
     }
 }

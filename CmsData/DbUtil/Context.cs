@@ -19,6 +19,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web;
+using Dapper;
 using UtilityExtensions;
 
 namespace CmsData
@@ -1239,6 +1240,12 @@ This search uses multiple steps which cannot be duplicated in a single query.
             var result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), pid, orgid);
             return ((int)(result.ReturnValue));
         }
+        [Function(Name = "dbo.MergeCampuses")]
+        public int MergeCampuses([Parameter(DbType = "Int")] int destCampus, [Parameter(DbType = "Int")] int oldCampus)
+        {
+            var result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), destCampus, oldCampus);
+            return ((int)(result.ReturnValue));
+        }
         [Function(Name = "dbo.PurgePerson")]
         public int PurgePerson([Parameter(DbType = "Int")] int? pid)
         {
@@ -1656,6 +1663,57 @@ This search uses multiple steps which cannot be duplicated in a single query.
         {
             return Content2(name, defaultValue, ContentTypeCode.TypeSqlScript);
         }
+        public void WriteContentSql(string name, string sql, string keyword = null)
+        {
+            var c = Content(name, ContentTypeCode.TypeSqlScript);
+            if (c == null)
+            {
+                c = new Content()
+                {
+                    Name = name,
+                    TypeID = ContentTypeCode.TypeSqlScript
+                };
+                Contents.InsertOnSubmit(c);
+            }
+            c.Body = sql;
+            if(keyword.HasValue())
+                c.SetKeyWords(this, new [] {keyword});
+            SubmitChanges();
+        }
+        public void WriteContentPython(string name, string script, string keyword = null)
+        {
+            var c = Content(name, ContentTypeCode.TypePythonScript);
+            if (c == null)
+            {
+                c = new Content()
+                {
+                    Name = name,
+                    TypeID = ContentTypeCode.TypePythonScript
+                };
+                Contents.InsertOnSubmit(c);
+            }
+            c.Body = script;
+            if(keyword.HasValue())
+                c.SetKeyWords(this, new [] {keyword});
+            SubmitChanges();
+        }
+        public void WriteContentText(string name, string text, string keyword = null)
+        {
+            var c = Content(name, ContentTypeCode.TypeText);
+            if (c == null)
+            {
+                c = new Content()
+                {
+                    Name = name,
+                    TypeID = ContentTypeCode.TypeText
+                };
+                Contents.InsertOnSubmit(c);
+            }
+            if(keyword.HasValue())
+                c.SetKeyWords(this, new [] {keyword});
+            c.Body = text;
+            SubmitChanges();
+        }
         public void SetNoLock()
         {
             //ExecuteCommand("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
@@ -1975,6 +2033,11 @@ This search uses multiple steps which cannot be duplicated in a single query.
             return (int)(result?.ReturnValue ?? 0);
         }
 
+        /// <summary>
+        /// The read-only connection will use an ro-CMS_{host} user if the appsettings contain a setting for readonlypassword
+        /// Otherwise, the default connection string is used
+        /// </summary>
+        /// <returns cref="SqlConnection" />
         public DbConnection ReadonlyConnection()
         {
             var finance = CurrentRoles().Contains("Finance");

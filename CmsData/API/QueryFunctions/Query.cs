@@ -117,16 +117,19 @@ namespace CmsData
             var cn = GetReadonlyConnection();
             return cn.ExecuteScalar<int>(sql);
         }
+        public string QuerySqlStr(string sql)
+        {
+            var cn = GetReadonlyConnection();
+            return cn.ExecuteScalar<string>(sql);
+        }
         public dynamic QuerySqlTop1(string sql)
         {
             return QuerySqlTop1(sql, null);
         }
-
         public dynamic QuerySqlTop1(string sql, object p1)
         {
             return QuerySqlTop1(sql, p1, null);
         }
-
         public dynamic QuerySqlTop1(string sql, object p1, object declarations)
         {
             var q = QuerySql(sql, p1, declarations);
@@ -135,9 +138,9 @@ namespace CmsData
 
         public IEnumerable<dynamic> QuerySql(string sql)
         {
-            return QuerySql(sql, null);
+            var r = QuerySql(sql, null);
+            return r;
         }
-
         public IEnumerable<dynamic> QuerySql(string sql, object declarations)
         {
             var cn = GetReadonlyConnection();

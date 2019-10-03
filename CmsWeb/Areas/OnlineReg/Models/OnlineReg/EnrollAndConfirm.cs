@@ -10,6 +10,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using UtilityExtensions;
+using CmsWeb.Code;
+using HtmlAgilityPack;
 
 namespace CmsWeb.Areas.OnlineReg.Models
 {
@@ -134,12 +136,13 @@ namespace CmsWeb.Areas.OnlineReg.Models
             }
         }
 
-        private bool ValidateEmailRecipientRegistrant(string name, string detailSection)
+        public static bool ValidateEmailRecipientRegistrant(string name, string detailSection)
         {
-            detailSection = $"<root>{detailSection}</root>";
-            XDocument doc = XDocument.Parse(detailSection);
-            IEnumerable<string> childList = from el in doc.Descendants("registrant")
-                                            select el.Value;
+            //some users use to include <br> tags in his emails but this tag is not recognized by xdocument.
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(detailSection);
+            IEnumerable<string> childList = from el in htmlDoc.DocumentNode.Descendants("registrant")
+                                            select el.InnerText;
 
             return childList.Any(p => p == name);
         }
@@ -214,17 +217,17 @@ Total Fee paid for this registration session: {ts?.TotPaid:C}<br/>
 
             if (masterorgid == null)
             {
-                throw new Exception("masterorgid was null in SendConfirmation");
+                return null;
             }
 
             if (settings == null)
             {
-                throw new Exception("settings was null");
+                return null;
             }
 
             if (!settings.ContainsKey(masterorgid.Value))
             {
-                throw new Exception("setting not found for masterorgid " + masterorgid.Value);
+                return null;
             }
 
             ParseSettings();
@@ -398,13 +401,8 @@ Total Fee paid for this registration session: {ts?.TotPaid:C}<br/>
 
         private string GetSubject(OnlineRegPersonModel p)
         {
-            if (p.setting.Subject.HasValue())
-            {
-                return Util.PickFirst(p.setting.Subject, defaultSubject);
-            }
-
             var os = GetMasterOrgSettings();
-            return Util.PickFirst(os.Subject, defaultSubject);
+            return Util.PickFirst(p.setting?.Subject, os?.Subject, defaultSubject);
         }
 
         private string GetSubject()
