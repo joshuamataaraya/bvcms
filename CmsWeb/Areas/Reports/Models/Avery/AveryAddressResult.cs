@@ -121,8 +121,8 @@ namespace CmsWeb.Areas.Reports.Models
                     ph.AddLine(m.MailingAddress.Trim(), font); 
                 else
                 {
-                    ph.AddLine(m.Address, font);
                     ph.AddLine(m.Address2, font);
+                    ph.AddLine(m.Address, font);
                     ph.AddLine(m.CSZ, font);
                 }
                 c.AddElement(ph);
