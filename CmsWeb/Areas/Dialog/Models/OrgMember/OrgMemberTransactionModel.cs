@@ -1,5 +1,6 @@
 using CmsData;
 using CmsWeb.Areas.OnlineReg.Models;
+using CmsWeb.Constants;
 using CmsWeb.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -18,7 +19,9 @@ namespace CmsWeb.Areas.Dialog.Models
         public decimal Due;
         public CMSDataContext CurrentDatabase { get; set; }
 
+        [Obsolete(Errors.ModelBindingConstructorError, error: true)]
         public OrgMemberTransactionModel() { }
+
         public OrgMemberTransactionModel(CMSDataContext db)
         {
             CurrentDatabase = db;

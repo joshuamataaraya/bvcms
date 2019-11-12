@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web.Mvc;
 using CmsWeb.Models;
 using UtilityExtensions;
+using CmsWeb.Constants;
 
 namespace CmsWeb.Areas.Org.Models
 {
@@ -37,9 +38,8 @@ namespace CmsWeb.Areas.Org.Models
 
         public int Id { get; set; }
 
-        public SettingsAttendanceModel()
-        {
-        }
+        [Obsolete(Errors.ModelBindingConstructorError, error: true)]
+        public SettingsAttendanceModel(){}
 
         public SettingsAttendanceModel(int id, CMSDataContext dataContext)
         {

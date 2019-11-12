@@ -31,21 +31,21 @@ namespace CmsWeb.Areas.Figures.Controllers
 
         public ActionResult GetMapData(int? progId)
         {
-            var test = new GoogleChartsData();
-            return Json(test.GetChartData(progId).ToList(), JsonRequestBehavior.AllowGet);
+            var m = new GoogleChartsData(CurrentDatabase);
+            return Json(m.GetChartData(progId).ToList(), JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult ChartDisplayView(int[] fundIdsArr, int? year)
         {
-            var test = new GoogleChartsData();
-            var temp = test.GetFundChartData(fundIdsArr, year).ToList();
+            var m = new GoogleChartsData(CurrentDatabase);
+            var temp = m.GetFundChartData(fundIdsArr, year).ToList();
             return View(temp);
         }
 
         public ActionResult AttendanceChartDisplayView(int[] orgIdsArr)
         {
-            var test = new GoogleChartsData();
-            var temp = test.GetAttendanceChartData(orgIdsArr).ToList();
+            var m = new GoogleChartsData(CurrentDatabase);
+            var temp = m.GetAttendanceChartData(orgIdsArr).ToList();
             return View(temp);
         }
 

@@ -86,6 +86,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Areas\CheckIn\Views\CheckinTimeViewsTests.cs" />
+    <Compile Include="Areas\Figures\Views\Figures\GetFundChartTest.cs" />
+    <Compile Include="Areas\Figures\Views\Figures\GetFundChartTestData.cs" />
     <Compile Include="Areas\General\ScriptControllerTests.cs" />
     <Compile Include="Areas\Figures\Views\Figures\RefineFundViewTests.cs" />
     <Compile Include="Areas\Finance\Views\Bundle\EditTests.cs" />

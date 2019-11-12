@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using CmsWeb.Models;
 using UtilityExtensions;
 using LumenWorks.Framework.IO.Csv;
+using CmsWeb.Constants;
 
 namespace CmsWeb.Areas.Org.Models
 {
@@ -20,9 +21,8 @@ namespace CmsWeb.Areas.Org.Models
         public int count;
         private List<SelectListItem> mtypes;
 
-        public OrgGroupsModel()
-        {
-        }
+        [Obsolete(Errors.ModelBindingConstructorError, error: true)]
+        public OrgGroupsModel(){}
 
         public OrgGroupsModel(CMSDataContext db, int id)
         {

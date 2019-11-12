@@ -345,6 +345,7 @@
     <Compile Include="Classes\PeopleUtils.cs" />
     <Compile Include="Classes\RoleChecker\RoleChecker.cs" />
     <Compile Include="Classes\style.cs" />
+    <Compile Include="Code\Constants.cs" />
     <Compile Include="DbUtil\CurrentOrg.cs" />
     <Compile Include="DbUtil\ModelViewModel.cs" />
     <Compile Include="Email\ReplacementCodes\Links\UnlayerLink.cs" />

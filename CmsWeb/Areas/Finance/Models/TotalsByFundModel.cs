@@ -1,6 +1,7 @@
 using CmsData;
 using CmsData.API;
 using CmsData.Codes;
+using CmsWeb.Constants;
 using CmsData.View;
 using CmsWeb.Code;
 using Dapper;
@@ -14,7 +15,7 @@ using UtilityExtensions;
 
 namespace CmsWeb.Models
 {
-    public class TotalsByFundModel
+    public class TotalsByFundModel : IDbBinder
     {
         public DateTime? Dt1 { get; set; }
         public DateTime? Dt2 { get; set; }
@@ -29,9 +30,28 @@ namespace CmsWeb.Models
         public bool IncludeBundleType { get; set; }
         public bool NonTaxDeductible { get; set; }
         public bool FilterByActiveTag { get; set; }
+
+        public CMSDataContext CurrentDatabase
+        {
+            get => _currentDatabase;
+            set
+            {
+                _currentDatabase = value;
+            }
+        }
+
         public EpplusResult epr;
 
-        public TotalsByFundModel()
+        [Obsolete(Errors.ModelBindingConstructorError, true)]
+        public TotalsByFundModel(){}
+
+        public TotalsByFundModel(CMSDataContext db) : base()
+        {
+            CurrentDatabase = db;
+            Init();
+        }
+
+        private void Init()
         {
             var today = Util.Now.Date;
             var first = new DateTime(today.Year, today.Month, 1);
@@ -44,7 +64,6 @@ namespace CmsWeb.Models
             Dt2 = first.AddMonths(1).AddDays(-1);
             Online = 2;
         }
-
         public FundTotalInfo FundTotal;
 
         private class ContributionIdItem
@@ -54,7 +73,7 @@ namespace CmsWeb.Models
 
         public void SaveAsExcel()
         {
-            var api = new APIContributionSearchModel(DbUtil.Db)
+            var api = new APIContributionSearchModel(CurrentDatabase)
             {
                 model =
                 {
@@ -79,14 +98,14 @@ namespace CmsWeb.Models
         {
             // if a user is a member of the fundmanager role, we do not want to enable custom reports as this could bypass the fund restrictions at present
             var fundmanagerRoleName = "FundManager";
-            var currentUserIsFundManager = DbUtil.Db.CurrentUser.Roles.Contains(fundmanagerRoleName, StringComparer.OrdinalIgnoreCase);
+            var currentUserIsFundManager = CurrentDatabase.CurrentUser.Roles.Contains(fundmanagerRoleName, StringComparer.OrdinalIgnoreCase);
 
             if (currentUserIsFundManager)
             {
                 return new string[] { };
             }
 
-            var q = from c in DbUtil.Db.Contents
+            var q = from c in CurrentDatabase.Contents
                     where c.TypeID == ContentTypeCode.TypeSqlScript
                     where c.Body.Contains("--class=TotalsByFund")
                     select c.Name;
@@ -98,7 +117,7 @@ namespace CmsWeb.Models
         {
             List<FundTotalInfo> q = null;
 
-            var api = new APIContributionSearchModel(DbUtil.Db)
+            var api = new APIContributionSearchModel(CurrentDatabase)
             {
                 model =
                 {
@@ -174,8 +193,8 @@ namespace CmsWeb.Models
 
         public IEnumerable<GetTotalContributionsRange> TotalsByRange()
         {
-            var customFundIds = APIContributionSearchModel.GetCustomFundSetList(DbUtil.Db, FundSet);
-            var authorizedFundIds = DbUtil.Db.ContributionFunds.ScopedByRoleMembership(DbUtil.Db).Select(f => f.FundId).ToList();
+            var customFundIds = APIContributionSearchModel.GetCustomFundSetList(CurrentDatabase, FundSet);
+            var authorizedFundIds = CurrentDatabase.ContributionFunds.ScopedByRoleMembership(CurrentDatabase).Select(f => f.FundId).ToList();
 
             string fundIds = string.Empty;
 
@@ -188,7 +207,7 @@ namespace CmsWeb.Models
                 fundIds = authorizedFundIds.JoinInts(",");
             }
 
-            var list = (from r in DbUtil.Db.GetTotalContributionsRange(Dt1, Dt2, CampusId, NonTaxDeductible ? (bool?)true : false, IncUnclosedBundles, fundIds)
+            var list = (from r in CurrentDatabase.GetTotalContributionsRange(Dt1, Dt2, CampusId, NonTaxDeductible ? (bool?)true : false, IncUnclosedBundles, fundIds)
                         orderby r.Range
                         select r).ToList();
 
@@ -203,8 +222,8 @@ namespace CmsWeb.Models
 
         public IEnumerable<SelectListItem> Campuses()
         {
-            var qc = DbUtil.Db.Campus.AsQueryable();
-            qc = DbUtil.Db.Setting("SortCampusByCode")
+            var qc = CurrentDatabase.Campus.AsQueryable();
+            qc = CurrentDatabase.Setting("SortCampusByCode")
                 ? qc.OrderBy(cc => cc.Code)
                 : qc.OrderBy(cc => cc.Description);
             var list = (from c in qc
@@ -254,6 +273,7 @@ namespace CmsWeb.Models
         }
 
         private string connector;
+        private CMSDataContext _currentDatabase;
 
         private string BuildUrl(string baseurl, int? fundid, int? bundletypeid)
         {
@@ -324,7 +344,7 @@ namespace CmsWeb.Models
 
             if (FilterByActiveTag)
             {
-                var tagid = DbUtil.Db.TagCurrent().Id;
+                var tagid = CurrentDatabase.TagCurrent().Id;
                 p.Add("@ActiveTagFilter", tagid);
             }
             else

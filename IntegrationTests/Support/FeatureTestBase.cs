@@ -58,6 +58,7 @@ namespace IntegrationTests.Support
             ChromeDriver chromedriver;
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("ignore-certificate-errors");
+            options.AddArgument("no-sandbox");
             var chromedriverDir = Environment.GetEnvironmentVariable("ChromeDriverDir");
             if (string.IsNullOrEmpty(chromedriverDir))
             {
