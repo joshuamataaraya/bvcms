@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using CmsData;
-using CmsWeb.Areas.Figures.Models;
+﻿using CmsWeb.Areas.Figures.Models;
+using CmsWeb.Charts;
 using CmsWeb.Lifecycle;
 using System;
 using System.Collections.Generic;

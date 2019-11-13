@@ -910,6 +910,10 @@
     <Compile Include="Models\Api\ApiPerson.cs" />
     <Compile Include="Models\Api\ApiOrganizationMember.cs" />
     <Compile Include="Models\Api\AddContributionModel.cs" />
+    <Compile Include="Models\Charts\ChartDTO.cs" />
+    <Compile Include="Models\Charts\GoogleChartsData.cs" />
+    <Compile Include="Models\Charts\LineChartDTO.cs" />
+    <Compile Include="Models\Charts\MonthDTO.cs" />
     <Compile Include="Models\DbBinder.cs" />
     <Compile Include="Models\DynamicParametersExtensions.cs" />
     <Compile Include="Models\ErrorMessage.cs" />
