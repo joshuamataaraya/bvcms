@@ -1,4 +1,5 @@
 ﻿using CmsData;
+using CmsWeb.Charts;
 using CmsWeb.Models;
 using IntegrationTests.Support;
 using SharedTestFixtures;
@@ -20,12 +21,11 @@ namespace IntegrationTests.Areas.Figures.Views.Figures
         {
             username = RandomString();
             password = RandomString();
-            string roleName = "role_" + RandomString();
             var user = CreateUser(username, password, roles: new string[] { "Access", "Edit", "Admin" });
-            Login();
 
             using (var db = CMSDataContext.Create(DatabaseFixture.Host))
             {
+                db.CurrentUser = user;
                 var data = new GoogleChartsData(db);
                 var result = data.GetFundChartData(fundIds, year);
                 TotalsByFundModel m = new TotalsByFundModel(db);

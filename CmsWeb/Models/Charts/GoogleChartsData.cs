@@ -185,33 +185,33 @@ namespace CmsWeb.Charts
         private List<ChartDTO> getContCurYearList(int year)
         {
             var api = new APIContributionSearchModel(CurrentDatabase);
-            return
-                (from c in api.FetchContributions()
-                 where c.ContributionDate.Value.Year == (year)
-                 where c.ContributionTypeId != ContributionTypeCode.Pledge
-                 group c by new { c.ContributionDate.Value.Month }
-                into grp
-                 select new ChartDTO
-                 {
-                     Name = grp.First().ContributionDate.Value.ToString("MMM", CultureInfo.InvariantCulture),
-                     Count = Convert.ToInt32(grp.Sum(t => t.ContributionAmount).Value)
-                 }).ToList();
+            var q = from c in api.FetchContributions()
+                    where c.ContributionDate.Value.Year == year &&
+                          c.ContributionTypeId != ContributionTypeCode.Pledge
+                    group c by new { c.ContributionDate.Value.Month }
+                    into grp
+                    select new ChartDTO
+                    {
+                        Name = grp.First().ContributionDate.Value.ToString("MMM", CultureInfo.InvariantCulture),
+                        Count = Convert.ToInt32(grp.Sum(t => t.ContributionAmount.GetValueOrDefault(0)))
+                    };
+            return q.ToList();
         }
 
         private List<ChartDTO> getContCurYearList(int[] fundIds, int year)
         {
             var api = new APIContributionSearchModel(CurrentDatabase);
-            return
-                (from c in api.FetchContributions()
-                 where c.ContributionDate.Value.Year == (year) &&
-                 fundIds.Contains(c.FundId)
-                 group c by new { c.ContributionDate.Value.Month }
-                        into grp
-                 select new ChartDTO
-                 {
-                     Name = grp.First().ContributionDate.Value.ToString("MMM", CultureInfo.InvariantCulture),
-                     Count = Convert.ToInt32(grp.Sum(t => t.ContributionAmount).Value)
-                 }).ToList();
+            var q = from c in api.FetchContributions()
+                    where c.ContributionDate.Value.Year == year &&
+                          fundIds.Contains(c.FundId)
+                    group c by new { c.ContributionDate.Value.Month }
+                    into grp
+                    select new ChartDTO
+                    {
+                        Name = grp.First().ContributionDate.Value.ToString("MMM", CultureInfo.InvariantCulture),
+                        Count = Convert.ToInt32(grp.Sum(t => t.ContributionAmount.GetValueOrDefault(0)))
+                    };
+            return q.ToList();
 
         }
     }
