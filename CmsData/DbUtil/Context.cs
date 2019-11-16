@@ -1,10 +1,4 @@
-﻿/* Author: David Carroll
- * Copyright (c) 2008, 2009 Bellevue Baptist Church
- * Licensed under the GNU General Public License (GPL v2)
- * you may not use this code except in compliance with the License.
- * You may obtain a copy of the License at http://bvcms.codeplex.com/license
- */
-using CmsData.Codes;
+﻿using CmsData.Codes;
 using CmsData.Finance;
 using System;
 using System.Collections.Generic;
@@ -425,13 +419,7 @@ namespace CmsData
         }
         public IQueryable<Person> PersonQueryParents(IQueryable<Person> q)
         {
-            var q2 = from p in q
-                     from m in p.Family.People
-                     where m.PositionInFamilyId == 10
-                     //					 where (m.PositionInFamilyId == 10 && p.PositionInFamilyId != 10)
-                     //					 || (m.PeopleId == p.PeopleId && p.PositionInFamilyId == 10)
-                     where m.DeceasedDate == null
-                     select m.PeopleId;
+            var q2 = PeopleUtils.GetParentsAndAdultsIds(q);
             var tag = PopulateTemporaryTag(q2.Distinct());
             var q3 = from p in q
                      let ev = p.PeopleExtras.SingleOrDefault(ee => ee.Field == "Parent" && ee.IntValue > 0)
@@ -450,13 +438,7 @@ namespace CmsData
         public IQueryable<Person> PersonQueryPlusParents(IQueryable<Person> q)
         {
             var tag1 = PopulateTemporaryTag(q.Select(pp => pp.PeopleId).Distinct());
-            var q2 = from p in q
-                     from m in p.Family.People
-                     where m.PositionInFamilyId == 10
-                     //					 where (m.PositionInFamilyId == 10 && p.PositionInFamilyId != 10)
-                     //					 || (m.PeopleId == p.PeopleId && p.PositionInFamilyId == 10)
-                     where m.DeceasedDate == null
-                     select m.PeopleId;
+            var q2 = PeopleUtils.GetParentsAndAdultsIds(q);
 
             var tag2 = PopulateTemporaryTag(q2.Distinct());
             var q3 = from p in q
@@ -803,23 +785,27 @@ This search uses multiple steps which cannot be duplicated in a single query.
 
         private void GetCurrentUser()
         {
-            var q = from u in Users
-                    where u.UserId == Util.UserId
-                    select new
-                    {
-                        u,
-                        roleids = u.UserRoles.Select(uu => uu.RoleId).ToArray(),
-                        roles = u.UserRoles.Select(uu => uu.Role.RoleName).ToArray(),
-                    };
-            var i = q.SingleOrDefault();
-            if (i == null)
+            var username = HttpContextFactory.Current?.User?.Identity?.Name;
+            if (username.HasValue())
             {
-                return;
-            }
+                var q = from u in Users
+                        where u.UserId == Util.UserId || u.Username == username
+                        select new
+                        {
+                            u,
+                            roleids = u.UserRoles.Select(uu => uu.RoleId).ToArray(),
+                            roles = u.UserRoles.Select(uu => uu.Role.RoleName).ToArray(),
+                        };
+                var i = q.SingleOrDefault();
+                if (i == null)
+                {
+                    return;
+                }
 
-            _roles = i.roles;
-            _roleids = i.roleids;
-            CurrentUser = i.u;
+                _roles = i.roles;
+                _roleids = i.roleids;
+                CurrentUser = i.u;
+            }
         }
 
         private string[] _roles;
