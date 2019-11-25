@@ -106,7 +106,9 @@ namespace CmsWeb.Areas.Finance.Models.Report
                     continue;
                 }
 
-                var contributions = APIContribution.Contributions(db, ci, FromDate, toDate, cs.Funds).ToList();
+                bool TaxStatusCategorization = db.GetSetting("TaxStatusCategorization", "false").ToBool();
+
+                var contributions = APIContribution.Contributions(db, ci, FromDate, toDate, cs.Funds, TaxStatusCategorization).ToList();
                 var pledges = APIContribution.Pledges(db, ci, toDate, cs.Funds).ToList();
                 var giftsinkind = APIContribution.GiftsInKind(db, ci, FromDate, toDate, cs.Funds).ToList();
                 var nontaxitems = db.Setting("DisplayNonTaxOnStatement", "false").ToBool()

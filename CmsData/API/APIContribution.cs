@@ -95,7 +95,7 @@ namespace CmsData.API
                                 {
                                     Name = ci.Name,
                                     Type = ci.Joint ? "Joint" : "Individual",
-                                    Contributions = (from c in Contributions(_db, ci, frdt, todt, null)
+                                    Contributions = (from c in Contributions(_db, ci, frdt, todt, null, false)
                                                      select new Contribution
                                                      {
                                                          Amount = c.ContributionAmount ?? 0,
@@ -307,10 +307,10 @@ namespace CmsData.API
             return sb.ToString();
         }
 
-        public static IEnumerable<NormalContribution> Contributions(CMSDataContext db, ContributorInfo ci, DateTime fromDate, DateTime toDate, List<int> funds)
+        public static IEnumerable<NormalContribution> Contributions(CMSDataContext db, ContributorInfo ci, DateTime fromDate, DateTime toDate, List<int> funds, bool TaxStatusCategorization)
         {
             var q = from c in
-                db.NormalContributions(ci.PeopleId, ci.SpouseID, ci.Joint, fromDate, toDate, funds?.JoinInts(","))
+                db.NormalContributions(ci.PeopleId, ci.SpouseID, ci.Joint, fromDate, toDate, funds?.JoinInts(","), TaxStatusCategorization)
                     orderby c.ContributionDate
                     select c;
             return q;
