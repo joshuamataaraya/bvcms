@@ -2920,7 +2920,8 @@ namespace CmsData
             [Parameter(DbType = "bit")] bool? joint,
             [Parameter(DbType = "date")] DateTime? fromDate,
             [Parameter(DbType = "date")] DateTime? toDate,
-            [Parameter(DbType = "varchar")] string fundids
+            [Parameter(DbType = "varchar")] string fundids,
+            [Parameter(DbType = "bit")] bool? TaxStatusCategorization
             )
         {
             return this.CreateMethodCallQuery<View.NormalContribution>(this,
@@ -2930,7 +2931,8 @@ namespace CmsData
                 joint,
                 fromDate,
                 toDate,
-                fundids
+                fundids,
+                TaxStatusCategorization
                 );
         }
 
