@@ -26,6 +26,8 @@ namespace CmsData.View
 
         private string _FundDescription;
 
+        private bool? _NonTaxDeductible;
+
 
         public NormalContribution()
         {
@@ -178,6 +180,23 @@ namespace CmsData.View
                 if (this._FundDescription != value)
                 {
                     this._FundDescription = value;
+                }
+            }
+        }
+
+        [Column(Name = "NonTaxDeductible", Storage = "_NonTaxDeductible", DbType = "bit")]
+        public bool? NonTaxDeductible
+        {
+            get
+            {
+                return this._NonTaxDeductible;
+            }
+
+            set
+            {
+                if (this._NonTaxDeductible != value)
+                {
+                    this._NonTaxDeductible = value;
                 }
             }
         }

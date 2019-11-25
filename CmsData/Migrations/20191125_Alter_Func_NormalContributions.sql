@@ -16,11 +16,12 @@ RETURN
 		c.ContributionId,
 		c.ContributionAmount,
 		c.ContributionDate,
-		f.FundName as FundName,
+		FundName,
 		c.CheckNo,
 		p.[Name],
 		[Description] = CASE WHEN @TaxStatusCategorization = 1 THEN f.FundDescription ELSE c.ContributionDesc END,
-		CASE WHEN @TaxStatusCategorization = 1 THEN f.FundDescription + ' (Tax Deductible)' ELSE f.FundDescription END AS FundDescription
+		FundDescription,
+		f.NonTaxDeductible
 	FROM dbo.Contribution c
 	JOIN dbo.ContributionFund f ON f.FundId = c.FundId
 	JOIN dbo.People p ON p.PeopleId = c.PeopleId
@@ -36,5 +37,3 @@ RETURN
 	AND (@fundids IS NULL OR EXISTS(SELECT NULL FROM dbo.SplitInts(@fundids) WHERE Value = c.FundId))
 )
 GO
-
-
