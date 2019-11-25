@@ -111,6 +111,7 @@ namespace CmsWeb.Areas.Finance.Models.Report
                 var contributions = APIContribution.Contributions(db, ci, FromDate, toDate, cs.Funds, TaxStatusCategorization).ToList();
                 var pledges = APIContribution.Pledges(db, ci, toDate, cs.Funds).ToList();
                 var giftsinkind = APIContribution.GiftsInKind(db, ci, FromDate, toDate, cs.Funds).ToList();
+                var taxItems = contributions.Where(x => x.NonTaxDeductible == false).ToList();
                 var nontaxitems = db.Setting("DisplayNonTaxOnStatement", "false").ToBool()
                     ? APIContribution.NonTaxItems(db, ci, FromDate, toDate, cs.Funds).ToList()
                     : new List<NonTaxContribution>();
@@ -296,18 +297,41 @@ p { font-size: 11px; }
                 t.DefaultCell.Border = Rectangle.NO_BORDER;
 
                 var total = 0m;
-                foreach (var c in contributions)
+                if(TaxStatusCategorization)
                 {
-                    t.AddCell(new Phrase(c.ContributionDate.ToString2("d"), font));
-                    t.AddCell(new Phrase(GetFundDisplayText(db, () => c.FundName, () => c.FundDescription), font));
-                    cell = new PdfPCell(t.DefaultCell)
+                    var _contributions = contributions.Where(x => x.NonTaxDeductible == true);
+
+                    foreach (var c in _contributions)
                     {
-                        HorizontalAlignment = Element.ALIGN_RIGHT,
-                        Phrase = new Phrase(c.ContributionAmount.ToString2("N2"), font)
-                    };
-                    t.AddCell(cell);
-                    total += (c.ContributionAmount ?? 0);
+                        t.AddCell(new Phrase(c.ContributionDate.ToString2("d"), font));
+                        t.AddCell(new Phrase(GetFundDisplayText(db, () => c.FundName, () => c.FundDescription) + "\n(Non Tax-Deductible)", font));
+
+                        cell = new PdfPCell(t.DefaultCell)
+                        {
+                            HorizontalAlignment = Element.ALIGN_RIGHT,
+                            Phrase = new Phrase(c.ContributionAmount.ToString2("N2"), font)
+                        };
+                        t.AddCell(cell);
+                        total += (c.ContributionAmount ?? 0);
+                    }
                 }
+                else
+                {
+                    foreach (var c in contributions)
+                    {
+                        t.AddCell(new Phrase(c.ContributionDate.ToString2("d"), font));
+                        t.AddCell(new Phrase(GetFundDisplayText(db, () => c.FundName, () => c.FundDescription), font));
+
+                        cell = new PdfPCell(t.DefaultCell)
+                        {
+                            HorizontalAlignment = Element.ALIGN_RIGHT,
+                            Phrase = new Phrase(c.ContributionAmount.ToString2("N2"), font)
+                        };
+                        t.AddCell(cell);
+                        total += (c.ContributionAmount ?? 0);
+                    }
+                }
+
                 t.DefaultCell.Border = Rectangle.TOP_BORDER;
                 cell = new PdfPCell(t.DefaultCell)
                 {
@@ -417,6 +441,56 @@ p { font-size: 11px; }
                         cell = new PdfPCell(t.DefaultCell)
                         {
                             Phrase = new Phrase(GetFundDisplayText(db, () => c.FundName, () => c.FundDescription), font)
+                        };
+                        t.AddCell(cell);
+                        cell = new PdfPCell(t.DefaultCell)
+                        {
+                            Phrase = new Phrase(c.Description, font)
+                        };
+                        t.AddCell(cell);
+                    }
+                    ct.AddElement(t);
+                }
+
+                //------Tax Items
+
+                if (taxItems.Count > 0 && TaxStatusCategorization)
+                {
+                    t = new PdfPTable(new[] { 10f, 24f, 10f })
+                    {
+                        WidthPercentage = 100
+                    };
+                    t.DefaultCell.Border = Rectangle.NO_BORDER;
+                    t.HeaderRows = 2;
+
+                    cell = new PdfPCell(t.DefaultCell)
+                    {
+                        Colspan = 3,
+                        Phrase = new Phrase("\n\nTax-Deductible Items\n", boldfont)
+                    };
+                    t.AddCell(cell);
+
+                    t.DefaultCell.Border = Rectangle.BOTTOM_BORDER;
+                    t.AddCell(new Phrase("Date", boldfont));
+                    cell = new PdfPCell(t.DefaultCell)
+                    {
+                        Phrase = new Phrase("Fund", boldfont)
+                    };
+                    t.AddCell(cell);
+                    cell = new PdfPCell(t.DefaultCell)
+                    {
+                        Phrase = new Phrase("Description", boldfont)
+                    };
+                    t.AddCell(cell);
+
+                    t.DefaultCell.Border = Rectangle.NO_BORDER;
+
+                    foreach (var c in taxItems)
+                    {
+                        t.AddCell(new Phrase(c.ContributionDate.ToString2("d"), font));
+                        cell = new PdfPCell(t.DefaultCell)
+                        {
+                            Phrase = new Phrase(GetFundDisplayText(db, () => c.FundName, () => c.FundDescription) + "\n(Tax-Deductible)", font)
                         };
                         t.AddCell(cell);
                         cell = new PdfPCell(t.DefaultCell)
