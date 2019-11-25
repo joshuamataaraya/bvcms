@@ -9,7 +9,6 @@ namespace CmsData.View
     {
         private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 
-
         private int _ContributionId;
 
         private decimal? _ContributionAmount;
@@ -28,12 +27,9 @@ namespace CmsData.View
 
         private bool? _NonTaxDeductible;
 
-
         public NormalContribution()
         {
         }
-
-
 
         [Column(Name = "ContributionId", Storage = "_ContributionId", DbType = "int NOT NULL")]
         public int ContributionId
@@ -50,9 +46,7 @@ namespace CmsData.View
                     this._ContributionId = value;
                 }
             }
-
         }
-
 
         [Column(Name = "ContributionAmount", Storage = "_ContributionAmount", DbType = "Decimal(11,2)")]
         public decimal? ContributionAmount
@@ -69,9 +63,7 @@ namespace CmsData.View
                     this._ContributionAmount = value;
                 }
             }
-
         }
-
 
         [Column(Name = "ContributionDate", Storage = "_ContributionDate", DbType = "datetime")]
         public DateTime? ContributionDate
@@ -88,9 +80,7 @@ namespace CmsData.View
                     this._ContributionDate = value;
                 }
             }
-
         }
-
 
         [Column(Name = "FundName", Storage = "_FundName", DbType = "nvarchar(256) NOT NULL")]
         public string FundName
@@ -107,9 +97,7 @@ namespace CmsData.View
                     this._FundName = value;
                 }
             }
-
         }
-
 
         [Column(Name = "CheckNo", Storage = "_CheckNo", DbType = "nvarchar(20)")]
         public string CheckNo
@@ -126,9 +114,7 @@ namespace CmsData.View
                     this._CheckNo = value;
                 }
             }
-
         }
-
 
         [Column(Name = "Name", Storage = "_Name", DbType = "nvarchar(138)")]
         public string Name
@@ -145,9 +131,7 @@ namespace CmsData.View
                     this._Name = value;
                 }
             }
-
         }
-
 
         [Column(Name = "Description", Storage = "_Description", DbType = "nvarchar(256)")]
         public string Description
@@ -164,7 +148,6 @@ namespace CmsData.View
                     this._Description = value;
                 }
             }
-
         }
 
         [Column(Name = "FundDescription", Storage = "_FundDescription", DbType = "nvarchar(256)")]
@@ -200,8 +183,5 @@ namespace CmsData.View
                 }
             }
         }
-
-
     }
-
 }
