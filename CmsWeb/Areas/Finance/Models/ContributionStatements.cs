@@ -299,7 +299,7 @@ p { font-size: 11px; }
                 var total = 0m;
                 if(TaxStatusCategorization)
                 {
-                    var _contributions = contributions.Where(x => x.NonTaxDeductible == true);
+                    var _contributions = contributions.Where(x => x.NonTaxDeductible == true || x.NonTaxDeductible == null);
 
                     foreach (var c in _contributions)
                     {
@@ -472,32 +472,29 @@ p { font-size: 11px; }
 
                     t.DefaultCell.Border = Rectangle.BOTTOM_BORDER;
                     t.AddCell(new Phrase("Date", boldfont));
+                    t.AddCell(new Phrase("Description", boldfont));
                     cell = new PdfPCell(t.DefaultCell)
                     {
-                        Phrase = new Phrase("Fund", boldfont)
-                    };
-                    t.AddCell(cell);
-                    cell = new PdfPCell(t.DefaultCell)
-                    {
-                        Phrase = new Phrase("Description", boldfont)
+                        HorizontalAlignment = Element.ALIGN_RIGHT,
+                        Phrase = new Phrase("Amount", boldfont)
                     };
                     t.AddCell(cell);
 
                     t.DefaultCell.Border = Rectangle.NO_BORDER;
 
+                    var totalTaxItems = 0m;
                     foreach (var c in taxItems)
                     {
                         t.AddCell(new Phrase(c.ContributionDate.ToString2("d"), font));
+                        t.AddCell(new Phrase(GetFundDisplayText(db, () => c.FundName, () => c.FundDescription) + "\n(Tax-Deductible)", font));
+
                         cell = new PdfPCell(t.DefaultCell)
                         {
-                            Phrase = new Phrase(GetFundDisplayText(db, () => c.FundName, () => c.FundDescription) + "\n(Tax-Deductible)", font)
+                            HorizontalAlignment = Element.ALIGN_RIGHT,
+                            Phrase = new Phrase(c.ContributionAmount.ToString2("N2"), font)
                         };
                         t.AddCell(cell);
-                        cell = new PdfPCell(t.DefaultCell)
-                        {
-                            Phrase = new Phrase(c.Description, font)
-                        };
-                        t.AddCell(cell);
+                        totalTaxItems += (c.ContributionAmount ?? 0);
                     }
                     ct.AddElement(t);
                 }
