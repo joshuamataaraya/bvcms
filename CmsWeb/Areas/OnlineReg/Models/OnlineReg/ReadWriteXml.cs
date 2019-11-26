@@ -13,7 +13,7 @@ namespace CmsWeb.Areas.OnlineReg.Models
     public partial class OnlineRegModel
     {
         public void ReadXml(XmlReader reader)
-        {
+        {   
             var s = reader.ReadOuterXml();
             var x = XDocument.Parse(s);
             if (x.Root == null) return;
@@ -26,9 +26,13 @@ namespace CmsWeb.Areas.OnlineReg.Models
                     case "List":
                         foreach (var ee in e.Elements())
                         {
-                            OnlineRegPersonModel personModel = Util.DeSerialize<OnlineRegPersonModel>(ee.ToString());
-                            personModel.CurrentDatabase = CurrentDatabase;
-                            List.Add(personModel);
+                            OnlineRegPersonModel m = new OnlineRegPersonModel(CurrentDatabase);                          
+                            Type tType = m.GetType();
+                            MethodInfo mi = typeof(Util).GetMethod("DeSerialize", new Type[] { typeof(string)});
+                            MethodInfo oRef = mi.MakeGenericMethod(tType);
+                            var personModel = oRef.Invoke(m, new object[] { ee.ToString() });                            
+                            ((OnlineRegPersonModel)personModel).CurrentDatabase = CurrentDatabase;
+                            List.Add(((OnlineRegPersonModel)personModel));
                         }
                         break;
                     case "History":
