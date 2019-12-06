@@ -351,6 +351,7 @@
     <Compile Include="API\QueryFunctions\Query.cs" />
     <Compile Include="Classes\Barcodes\BarcodeHelper.cs" />
     <Compile Include="Classes\DataMapper\DataMapper.cs" />
+    <Compile Include="Charts\GoogleChartsData.cs" />
     <Compile Include="Classes\ExtraValues\Code.cs" />
     <Compile Include="Classes\ExtraValues\NewStandard.cs" />
     <Compile Include="Classes\GoogleCloudMessaging\GCMData.cs" />
