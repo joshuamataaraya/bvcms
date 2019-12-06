@@ -14,7 +14,7 @@ namespace CmsWeb.Models
     {
         public CMSDataContext CurrentDatabase { get; set; }
 
-        [Obsolete(Errors.ModelBindingConstructorError, error: true)]
+        [Obsolete(Errors.ModelBindingConstructorError, true)]
         public MissionTripFundingModel() { }
 
         public MissionTripFundingModel(CMSDataContext db)
