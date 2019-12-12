@@ -14,17 +14,21 @@ namespace SharedTestFixtures
     {
         public static Content CreateSpecialContent(int newType, string newName, int? newRole)
         {
-            var content = new Content();
-            content.Name = newName;
-            content.TypeID = newType;
-            content.RoleID = newRole ?? 0;
-            content.Title = newName;
-            content.Body = "";
-            content.DateCreated = DateTime.Now;
-
             var db = CMSDataContext.Create(Util.Host);
-            db.Contents.InsertOnSubmit(content);
-            db.SubmitChanges();
+            var content = db.Contents.SingleOrDefault(x => x.Name == "Empty Template" && x.TypeID == newType);
+
+            if(content == null)
+            {
+                content = new Content();
+                content.Name = newName;
+                content.TypeID = newType;
+                content.RoleID = newRole ?? 0;
+                content.Title = newName;
+                content.Body = "";
+                content.DateCreated = DateTime.Now;
+                db.Contents.InsertOnSubmit(content);
+                db.SubmitChanges();
+            }
 
             return content;
         }
