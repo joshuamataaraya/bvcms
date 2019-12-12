@@ -52,12 +52,12 @@
                                     <div class="col-sm-6 col-md-4 col-lg-3" style="margin-top: 5px; margin-bottom: 5px;" bvtemplate template="@empty.Id">
                                         <div class="row">
                                             <div class="col-xs-4">
-                                                <a href="#" class="templateItem" template="@empty.Id">
+                                                <a href="#" class="templateItem emptyTemplate" template="@empty.Id">
                                                     <img src="/PreviewImage/@empty.ThumbID" class="img-responsive img-thumbnail"/>
                                                 </a>
                                             </div>
                                             <div class="col-xs-8">
-                                                <a href="#" class="templateItem" template="@empty.Id"><strong>@empty.Name</strong></a>
+                                                <a href="#" class="templateItem emptyTemplate" template="@empty.Id"><strong>@empty.Name</strong></a>
                                             </div>
                                         </div>
                                     </div>
@@ -67,12 +67,12 @@
                                     <div class="col-sm-6 col-md-4 col-lg-3" style="margin-top: 5px; margin-bottom: 5px;" bvtemplate template="0">
                                         <div class="row">
                                             <div class="col-xs-4">
-                                                <a href="#" class="templateItem" template="0">
+                                                <a href="#" class="templateItem emptyTemplate" template="0">
                                                     <img src="/PreviewImage/0" class="img-responsive img-thumbnail"/>
                                                 </a>
                                             </div>
                                             <div class="col-xs-8">
-                                                <a href="#" class="templateItem" template="0"><strong>Blank</strong></a>
+                                                <a href="#" class="templateItem emptyTemplate" template="0"><strong>Blank</strong></a>
                                             </div>
                                         </div>
                                     </div>
@@ -304,7 +304,9 @@
                     $("#useUnlayer").val($(this).attr("useUnlayer"));
                 }
 
-                $("#selectTemplate").submit();
+                if (!this.className.includes("emptyTemplate")) {
+                    $("#selectTemplate").submit();
+                }
             });
 
             $('#clone-modal').on('shown.bs.modal', function (e) {
