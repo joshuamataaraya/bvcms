@@ -18,6 +18,7 @@ using System.Net;
 using System.Web.Configuration;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Web.Caching;
 
 namespace UtilityExtensions
 {
@@ -40,7 +41,7 @@ namespace UtilityExtensions
             {
                 return HttpContextFactory.Current?.Session?.SessionID ?? (string)HttpRuntime.Cache["SessionId"] ?? (SessionId = Guid.NewGuid().ToString());                
             }
-            set { HttpRuntime.Cache["SessionId"] = value; }
+            set { HttpRuntime.Cache.Insert("SessionId", value, null, DateTime.Now.Add(new TimeSpan(6, 0, 0)), Cache.NoSlidingExpiration); }
         }
 
         public static bool Auditing
