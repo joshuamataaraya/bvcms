@@ -19,7 +19,7 @@ namespace CmsWeb.Models.ExtraValues
                 }
                 Type = Type.Length == 0 ? "none" : Type;
 
-                return $"/ExtraValue/QueryData?field={HttpUtility.UrlEncode(Field)}&type={Type}";
+                return $"/ExtraValue/QueryData?field={HttpUtility.UrlEncode(Field)}&type={Type.ToLower()}";
             }
         }
 
